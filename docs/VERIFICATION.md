@@ -1,6 +1,6 @@
 # Release verification
 
-Verified 13 November 2026, Asia/Jakarta. Production: https://vfmaudio.rezaprama.workers.dev. Worker version: `bcaa4685-4119-458d-a4ad-67614c67b1ab`.
+Verified 13 November 2026, Asia/Jakarta. Production: https://vfmaudio.rezaprama.workers.dev. Worker version: `0e2a61c7-2289-4c92-9c99-ea89e054089f`.
 
 ## Executed checks
 
@@ -11,6 +11,7 @@ Verified 13 November 2026, Asia/Jakarta. Production: https://vfmaudio.rezaprama.
 - Production `GET /api/catalog`: HTTP 200, 744 products, mode `live`. `POST /api/admin/sync` without credentials: HTTP 401. Conditional GET using the weak ETag returned by Cloudflare: HTTP 304.
 - [GitHub Checks](https://github.com/rezaprama/vfmaudio/actions/workflows/checks.yml) validates the pushed source. [Initial sync run](https://github.com/rezaprama/vfmaudio/actions/runs/43417006144) succeeded with `changed:false,count:744`.
 - [Update-path sync run](https://github.com/rezaprama/vfmaudio/actions/runs/43418546213) succeeded with `changed:true,count:744`. Bootstrap checksum invalidation exercised the actual snapshot replacement path without altering product facts. D1 retained both current and previous payloads; the temporary checksum marker was repaired after checking that product facts and title matched. This was a release test, not a claim that the author edited the sheet at that time.
+- [Final sync and monthly-record run](https://github.com/rezaprama/vfmaudio/actions/runs/43419827628) succeeded. The authenticated importer receipt contained 744 products and the real check time; GitHub Actions committed the monthly record. [Final runtime-code Checks](https://github.com/rezaprama/vfmaudio/actions/runs/43419825573) also passed. The monthly record uses the existing successful receipt and requires no second network request.
 - Windows Application Control blocked the local `workerd.exe` runtime. The policy was preserved. Worker verification used real Cloudflare deployment and D1, while frontend outage tests used an ignored local QA proxy.
 - Production browser console: no errors observed after search, dialogs, comparison, navigation, and theme changes. Intentional HTTP 503 failures in the local outage test are separate from production console results.
 - Core Web Vitals and Lighthouse were not measured. No score or conformance certification is claimed.
