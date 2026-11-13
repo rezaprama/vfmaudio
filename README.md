@@ -33,7 +33,7 @@ Worker mengambil semua tab sebelum menyimpan hasil. Pemeriksaan header kolom kri
 
 Waktu “pemeriksaan”, “terakhir berhasil”, dan “snapshot berubah” adalah waktu aplikasi. Judul sumber ditampilkan terpisah; tanggal judul tidak dianggap waktu edit yang terverifikasi. Jika API gagal, browser memakai snapshot saat deployment dengan pemberitahuan yang terlihat. Kegagalan lebih dari 24 jam memunculkan penanda data lama.
 
-GitHub menonaktifkan workflow terjadwal di repositori publik setelah 60 hari tanpa aktivitas repositori. Pantau halaman Actions dan aktifkan kembali jika perlu; UI menandai sumber yang tidak berhasil diperiksa selama 24 jam. [Ketentuan jadwal GitHub](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
+GitHub menonaktifkan workflow terjadwal di repositori publik setelah 60 hari tanpa aktivitas repositori. Untuk menjaga aktivitas yang bermakna, workflow menyimpan satu catatan pemeriksaan sumber yang benar-benar berhasil setiap bulan di `.github/sync-heartbeat.json`. Catatan berisi waktu dan jumlah produk dari API status, bukan aktivitas rekaan. Token job diberi izin tulis hanya untuk repo ini dan hanya selama job berlangsung. Jika sinkronisasi terus gagal, catatan sukses tidak dibuat; pantau Actions dan penanda data lama di UI. [Ketentuan jadwal GitHub](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule).
 
 ## Menjalankan proyek
 
