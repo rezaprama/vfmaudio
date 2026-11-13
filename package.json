@@ -1,0 +1,36 @@
+{
+  "name": "vfmaudio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "sync:seed": "tsx scripts/sync-seed.ts",
+    "sync:remote": "tsx scripts/sync-remote.ts",
+    "db:local": "wrangler d1 execute vfmaudio --local --file=migrations/0001_catalog.sql",
+    "dev:worker": "wrangler dev --port 8787",
+    "deploy": "npm run build && wrangler deploy",
+    "cf:types": "wrangler types"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "latest",
+    "@fontsource/instrument-serif": "latest",
+    "@phosphor-icons/react": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest",
+    "wrangler": "^4.161.0"
+  }
+}

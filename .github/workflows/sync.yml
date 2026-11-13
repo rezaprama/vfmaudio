@@ -1,0 +1,28 @@
+name: Sync Kitab Audio
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: vfmaudio-catalog-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Refresh the validated Cloudflare catalog
+        env:
+          VFMAUDIO_SYNC_TOKEN: ${{ secrets.VFMAUDIO_SYNC_TOKEN }}
+        run: |
+          if [ -z "$VFMAUDIO_SYNC_TOKEN" ]; then
+            echo 'VFMAUDIO_SYNC_TOKEN is not configured.' >&2
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error \
+            --max-time 240 \
+            --request POST \
+            --header "Authorization: Bearer $VFMAUDIO_SYNC_TOKEN" \
+            https://vfmaudio.rezaprama.workers.dev/api/admin/sync

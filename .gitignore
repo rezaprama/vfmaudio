@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.cache/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+worker-configuration.d.ts
+*.log
