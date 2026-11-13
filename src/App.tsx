@@ -58,7 +58,7 @@ export default function App() {
     try { await navigator.clipboard.writeText(url.href); setToast('Tautan filter disalin. Pilihan ini tersimpan dalam URL.'); }
     catch { setToast('Filter tersimpan di URL browser. Salin alamat halaman untuk membagikannya.'); }
   }
-  function reset() { setConstraints({ ...DEFAULT_CONSTRAINTS }); setQuery(''); setNotices([]); setExpanded([]); setSort('value'); }
+  function reset() { setConstraints({ ...DEFAULT_CONSTRAINTS }); setQuery(''); setNotices([]); setExpanded([]); setSort('value'); history.replaceState(null, '', location.pathname + location.hash); }
 
   return <div className={`app ${selected.length ? 'has-comparison' : ''}`}>
     <a className="skip-link" href="#hasil">Lewati ke hasil pencarian</a>

@@ -49,6 +49,7 @@ export async function syncCatalog(env: Env): Promise<{ changed: boolean; count: 
     await env.DB.batch([
       env.DB.prepare('INSERT INTO sync_state (id, checked_at, last_error) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET checked_at=excluded.checked_at, last_error=excluded.last_error').bind(checkedAt, message),
       env.DB.prepare("INSERT INTO sync_runs (checked_at, status, message) VALUES (?, 'error', ?)").bind(checkedAt, message),
+      env.DB.prepare('DELETE FROM sync_runs WHERE id NOT IN (SELECT id FROM sync_runs ORDER BY id DESC LIMIT 100)'),
     ]);
     console.error(JSON.stringify({ event: 'catalog_sync_error', checkedAt, message }));
     throw error;
@@ -83,7 +84,8 @@ export default {
         const status: SyncStatus = { checkedAt: state?.checked_at ?? null, lastSuccessAt: state?.last_success_at ?? null, lastChangedAt: state?.last_changed_at ?? snapshot.imported_at, lastError: state?.last_error ?? null, mode: 'live' };
         const etag = `"${snapshot.checksum}:${state?.checked_at ?? ''}:${state?.last_error ? 'error' : 'ok'}"`;
         const responseHeaders = { ...headers, ETag: etag, 'Cache-Control': 'public, max-age=300, stale-while-revalidate=600' };
-        if (request.headers.get('If-None-Match') === etag) return new Response(null, { status: 304, headers: responseHeaders });
+        const matchesTag = request.headers.get('If-None-Match')?.split(',').some(tag => tag.trim() === '*' || tag.trim().replace(/^W\//, '') === etag);
+        if (matchesTag) return new Response(null, { status: 304, headers: responseHeaders });
         return new Response(request.method === 'HEAD' ? null : JSON.stringify({ catalog: JSON.parse(snapshot.payload), status }), { headers: responseHeaders });
       }
       if (url.pathname === '/api/status') {

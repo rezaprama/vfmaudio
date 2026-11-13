@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { DEFAULT_CONSTRAINTS, evaluate, parseNeeds, recommend, valueOrder } from '../src/lib/recommend';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_CONSTRAINTS, evaluate, parseNeeds, readSharedConstraints, recommend, valueOrder } from '../src/lib/recommend';
 import type { Product } from '../src/lib/types';
 
 const product: Product = {
@@ -11,6 +11,11 @@ const product: Product = {
 };
 
 describe('needs and recommendations', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it('rejects inherited category keys and non-finite budgets from shared URLs', () => {
+    vi.stubGlobal('location', { search: '?filters=' + encodeURIComponent('{"categories":["constructor","__proto__","iem"],"budget":1e999}') });
+    expect(readSharedConstraints().categories).toEqual(['iem']); expect(readSharedConstraints().budget).toBe(DEFAULT_CONSTRAINTS.budget);
+  });
   it('parses the user example including both device types and both connectors', () => {
     const { constraints: c } = parseNeeds('Uang 1 jt, IEM atau wireless phone, type c dan 3.5 dengan mic oke untuk Zoom, musik audiophile');
     expect(c.budget).toBe(1_000_000); expect(c.categories).toEqual(['iem', 'wireless-headphone']);

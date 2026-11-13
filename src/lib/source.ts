@@ -107,12 +107,25 @@ export function normalizeSheet(spec: SheetSpec, rows: string[][]): Product[] {
   if (!header.includes(spec.expected)) throw new Error(`Struktur ${spec.sheet} berubah: kolom nama tidak cocok (${header}).`);
   const columnChecks: [number | undefined, RegExp, string][] = [
     [spec.price[0], /price|harga|link/i, 'harga'],
+    [spec.value, /value/i, 'value'],
+    [spec.quality, /tier|sound|rank/i, 'tier kualitas'],
     [spec.mic, /mic/i, 'mic'],
     [spec.sound, /sound|overall/i, 'nilai suara'],
+    [spec.tuning, /tuning|tonal/i, 'tuning'],
+    [spec.driver, /driver|chip|capsule/i, 'driver'],
+    [spec.battery, /battery|baterai/i, 'baterai'],
+    [spec.codec, /codec|bluet|blut/i, 'codec'],
+    [spec.anc, /anc/i, 'ANC'],
+    [spec.multipoint, /multipoint/i, 'multipoint'],
     ...(spec.connection ?? []).map(col => [col, /cable|kabel|connect|konektor|output|input|colokan|ujung|wireless/i, 'koneksi'] as [number, RegExp, string]),
   ];
   for (const [column, expected, label] of columnChecks) {
     if (column !== undefined && !expected.test(rows[spec.header]?.[column] ?? '')) throw new Error(`Struktur ${spec.sheet} berubah: kolom ${label} tidak cocok.`);
+  }
+  const scoreHeaders: Record<string, RegExp> = { Bass: /bass/i, 'Low mid': /lo(?:w)?\s*mid/i, 'High mid': /hi(?:gh)?\s*mid/i, Treble: /treble/i, Vokal: /voc/i, Soundstage: /soundstage|stereo\s*image/i, Imaging: /imaging/i, Separasi: /separation|instruments/i, Timbre: /timbre/i, Punch: /punch/i, Detail: /detail|resolution|clarity/i, Teknis: /technicality/i, Driver: /driver/i, Dinamika: /dynamics/i };
+  for (const [label, column] of Object.entries(spec.scores ?? {})) {
+    const combinedHeader = `${rows[spec.header]?.[column] ?? ''} ${rows[spec.header + 1]?.[column] ?? ''}`;
+    if (!scoreHeaders[label]?.test(combinedHeader)) throw new Error(`Struktur ${spec.sheet} berubah: komponen ${label} tidak cocok.`);
   }
   const products: Product[] = [];
   const seen = new Set<string>();

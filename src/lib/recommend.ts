@@ -151,7 +151,7 @@ export function readSharedConstraints(): Constraints {
     if (typeof data.budget === 'number' && Number.isFinite(data.budget)) next.budget = Math.max(10_000, Math.min(1e9, data.budget));
     if (typeof data.accessoryReserve === 'number' && Number.isFinite(data.accessoryReserve)) next.accessoryReserve = Math.max(0, Math.min(1e8, data.accessoryReserve));
     if (typeof data.minSound === 'number' && Number.isFinite(data.minSound)) next.minSound = Math.max(0, Math.min(10, data.minSound));
-    if (Array.isArray(data.categories)) next.categories = data.categories.filter((category): category is Category => typeof category === 'string' && category in CATEGORY_LABELS);
+    if (Array.isArray(data.categories)) next.categories = data.categories.filter((category): category is Category => typeof category === 'string' && Object.hasOwn(CATEGORY_LABELS, category));
     if (typeof data.search === 'string') next.search = data.search.slice(0, 150);
     if (data.tuning && ['any', 'neutral', 'warm', 'bass', 'bright'].includes(data.tuning)) next.tuning = data.tuning;
     return next;
