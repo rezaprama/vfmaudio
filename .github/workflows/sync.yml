@@ -28,12 +28,14 @@ jobs:
             --max-time 240 \
             --request POST \
             --header "Authorization: Bearer $VFMAUDIO_SYNC_TOKEN" \
+            --output "$RUNNER_TEMP/vfmaudio-sync-result.json" \
             https://vfmaudio.rezaprama.workers.dev/api/admin/sync
+          cat "$RUNNER_TEMP/vfmaudio-sync-result.json"
       - name: Record one successful source check per month
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          python3 scripts/record-sync.py
+          python3 scripts/record-sync.py "$RUNNER_TEMP/vfmaudio-sync-result.json"
           git add .github/sync-heartbeat.json
           if git diff --cached --quiet; then
             echo 'This month already has a successful source-check record.'

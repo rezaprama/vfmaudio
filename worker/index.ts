@@ -16,7 +16,7 @@ function json(data: unknown, status = 200, extra: Record<string, string> = {}): 
   return new Response(JSON.stringify(data), { status, headers: { ...headers, ...extra } });
 }
 
-export async function syncCatalog(env: Env): Promise<{ changed: boolean; count: number }> {
+export async function syncCatalog(env: Env): Promise<{ changed: boolean; count: number; checkedAt: string }> {
   const checkedAt = new Date().toISOString();
   try {
     const catalog = await fetchCatalog();
@@ -43,7 +43,7 @@ export async function syncCatalog(env: Env): Promise<{ changed: boolean; count: 
     statements.push(env.DB.prepare('DELETE FROM sync_runs WHERE id NOT IN (SELECT id FROM sync_runs ORDER BY id DESC LIMIT 100)'));
     await env.DB.batch(statements);
     console.log(JSON.stringify({ event: 'catalog_sync', changed, count: catalog.products.length, checkedAt }));
-    return { changed, count: catalog.products.length };
+    return { changed, count: catalog.products.length, checkedAt };
   } catch (error) {
     const message = error instanceof Error ? error.message.slice(0, 400) : 'Sinkronisasi gagal.';
     await env.DB.batch([
